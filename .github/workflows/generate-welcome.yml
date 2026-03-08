@@ -1,0 +1,42 @@
+name: Generate Welcome Page
+
+on:
+  workflow_dispatch:
+    inputs:
+      first_name:
+        description: "Enter your first name"
+        required: true
+        type: string
+      last_name:
+        description: "Enter your last name"
+        required: true
+        type: string
+      country:
+        description: "Enter your country"
+        required: true
+        type: string
+
+jobs:
+  generate-welcome:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Generate welcome HTML
+        run: |
+          printf '%s\n' "${{ github.event.inputs.first_name }}" "${{ github.event.inputs.last_name }}" "${{ github.event.inputs.country }}" | python3 generate_welcome.py
+
+      - name: Commit and push welcome.html
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add welcome.html
+          git commit -m "Generated welcome page for ${{ github.event.inputs.first_name }} ${{ github.event.inputs.last_name }} from ${{ github.event.inputs.country }}"
+          git push
