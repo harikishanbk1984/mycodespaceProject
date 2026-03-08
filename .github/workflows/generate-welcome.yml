@@ -30,13 +30,21 @@ jobs:
           python-version: "3.x"
 
       - name: Generate welcome HTML
+        env:
+          FIRST_NAME: ${{ github.event.inputs.first_name }}
+          LAST_NAME: ${{ github.event.inputs.last_name }}
+          COUNTRY: ${{ github.event.inputs.country }}
         run: |
-          printf '%s\n' "${{ github.event.inputs.first_name }}" "${{ github.event.inputs.last_name }}" "${{ github.event.inputs.country }}" | python3 generate_welcome.py
+          printf '%s\n' "$FIRST_NAME" "$LAST_NAME" "$COUNTRY" | python3 generate_welcome.py
 
       - name: Commit and push welcome.html
+        env:
+          FIRST_NAME: ${{ github.event.inputs.first_name }}
+          LAST_NAME: ${{ github.event.inputs.last_name }}
+          COUNTRY: ${{ github.event.inputs.country }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add welcome.html
-          git commit -m "Generated welcome page for ${{ github.event.inputs.first_name }} ${{ github.event.inputs.last_name }} from ${{ github.event.inputs.country }}"
+          git commit -m "Generated welcome page for $FIRST_NAME $LAST_NAME from $COUNTRY"
           git push
